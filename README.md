@@ -27,6 +27,8 @@ Here is an example of a run: https://github.com/worddangler/backend/actions/runs
 - We are using Jest for tests: https://jestjs.io/
 - We are using eslint for linting: https://eslint.org/
 - We are using prettier for formatting: https://prettier.io/
+- We are uisng ExpressJS server: https://expressjs.com/
+- We are using MongoDB as the database (with the node driver): https://www.mongodb.com/
 
 # Setting up your development environment
 - You can use any editor / ide.
