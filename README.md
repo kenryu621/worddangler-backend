@@ -32,4 +32,5 @@ Here is an example of a run: https://github.com/worddangler/backend/actions/runs
 
 # Setting up your development environment
 - You can use any editor / ide.
-- Install the prettier plugin for your editor and set it up to auto-fix your code on save. Note that prettier formatting is enforced, so if your code is not formatted to follow prettier rules, you will get linting errors when you make a pr.
+- Install the prettier plugin for your editor and set it up to auto-fix your code on save. Note that prettier formatting is enforced, so if your code is not formatted to follow prettier rules, you will get linting errors when you make a Pull Request.
+- Download and install insomnia for API testing: https://insomnia.rest/
