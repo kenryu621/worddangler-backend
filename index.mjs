@@ -5,7 +5,7 @@ import {env} from "node:process";
 dotenv.config();
 
 const app = express();
-const port = env.PORT;
+const port = env.SERVER_PORT;
 
 app.use(cors({
     origin: `http://${env.DOMAIN}:${env.CLIENT_PORT}`,
