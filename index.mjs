@@ -1,20 +1,7 @@
 import { env } from "node:process";
-import express from "express";
-import cors from "cors";
-import * as dotenv from "dotenv";
-dotenv.config();
+import app from "./app.mjs";
 
-const app = express();
 const port = env.SERVER_PORT;
-
-app.use(
-  cors({
-    origin: `http://${env.DOMAIN}:${env.CLIENT_PORT}`,
-    credentials: true,
-  })
-);
-
-app.use(express.json());
 
 app.listen(port, () => {
   console.log(`server started on port ${port}`);

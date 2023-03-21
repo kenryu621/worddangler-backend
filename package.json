@@ -4,7 +4,7 @@
   "description": "multiplayer hangman game backend",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "node --experimental-vm-modules ./node_modules/.bin/jest",
     "start": "nodemon index.mjs",
     "lint": "eslint . --ext .mjs,.js,.jsx,.ts,.tsx,.json"
   },
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "eslint": "^8.36.0",
-    "jest": "^29.5.0"
+    "jest": "^29.5.0",
+    "supertest": "^6.3.3"
   }
 }
