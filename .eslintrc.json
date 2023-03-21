@@ -14,6 +14,7 @@
         "plugin:import/recommended",
         "plugin:prettier/recommended"
     ],
+    "plugins": ["jest"],
     "overrides": [],
     "parserOptions": {
         "ecmaVersion": "latest",
@@ -24,6 +25,14 @@
         "quotes": ["error", "double"],
         "semi": ["error", "always"],
         "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
-        "import/order": 2
+        "import/order": 2,
+        "import/no-duplicates": 2,
+        "import/namespace": 0,
+        "require/module.export": "on",
+        "jest/no-disabled-tests": "warn",
+        "jest/no-focused-tests": "error",
+        "jest/no-identical-title": "error",
+        "jest/prefer-to-have-length": "warn",
+        "jest/valid-expect": "error"
     }
 }
