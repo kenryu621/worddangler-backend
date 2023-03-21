@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon index.mjs"
+    "start": "nodemon index.mjs",
+    "lint": "eslint . --ext .mjs,.js,.jsx,.ts,.tsx,.json"
   },
   "repository": {
     "type": "git",
