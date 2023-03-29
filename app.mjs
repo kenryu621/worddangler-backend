@@ -35,18 +35,49 @@ let sessions = {};
 
 io.on("connection", (socket) => {
   console.log(socket.id);
+  socket.once("create-new-session", (callback) => {
+    /**
+     * Function to generate random six digit alpha numeric session id
+     */
+    const randomStrGenerator = () => {
+      const chars =
+        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      let result = "";
+      for (var i = 6; i > 0; --i)
+        result += chars[Math.floor(Math.random() * chars.length)];
+      return result;
+    };
+
+    //Checking if the generated id is already in the sessions object. If so, then it generates the new six digit sessionid
+    let generatedSessionId = randomStrGenerator();
+    while (sessions[generatedSessionId]) {
+      generatedSessionId = randomStrGenerator();
+    }
+
+    console.log("SessionId: ", generatedSessionId);
+
+    //assigning the generated session id a game state
+    sessions[generatedSessionId] = createGameState();
+
+    //assigning the generated session id a room
+    socket.join(generatedSessionId);
+
+    console.log("Rooms: ", socket.rooms);
+    //sending the session id to the frontend
+    callback(generatedSessionId);
+  });
 
   /* Connect client to session
    * @function
    * @param {String} sessionId the id of the session to join
    */
-  socket.on("join-session", (sessionId) => {
-    socket.join(sessionId);
-    // (todo) if game session does not exist, create new session
-    sessions[sessionId] = createGameState();
-    // (todo) else, add user to existing session
-    sessions.push();
-  });
+  // socket.on("join-session", (sessionId) => {
+  //   socket.join(sessionId);
+  //   // (todo) if game session does not exist, create new session
+  //   sessions[sessionId] = createGameState();
+  //   // (todo) else, add user to existing session
+  //   sessions.push();
+  // });
 
   /* Send message to all clients (includin sender) in the same session
    * @function
