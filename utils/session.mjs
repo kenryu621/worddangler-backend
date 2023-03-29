@@ -3,7 +3,7 @@ const onValidSessionId = (onValid, sessions, sessionId) => {
   if (session) {
     return onValid(session);
   } else {
-    return "invalid session id";
+    return { error: "invalid session id" };
   }
 };
 
