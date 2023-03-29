@@ -68,9 +68,13 @@ io.on("connection", (socket) => {
     callback(generatedSessionId);
   });
 
+  //socket.on("join-room");
+
   /* Connect client to session
    * @function
-   * @param {String} sessionId the id of the session to join
+   * @param {Object} data
+   * @param {String} data.sessionId the session Id to join
+   * @param {String} data.username of client to join
    */
   socket.on("join-session", ({ sessionId, username }, callback) => {
     let isUsernameTaken = false;
@@ -87,14 +91,17 @@ io.on("connection", (socket) => {
 
         if (!isUsernameTaken) {
           const adminState = !session.adminState;
-          session.players.push({
+          const player = {
             username: username,
             isAdmin: adminState,
-          });
+          };
+          session.players.push(player);
           if (adminState) {
             session.adminState = adminStates.hasAdmin;
           }
-          callback(session);
+          socket.join(sessionId);
+          callback(player);
+          io.in(sessionId).emit("receive-session", session);
         }
       },
       sessions,
