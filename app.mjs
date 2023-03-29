@@ -6,7 +6,7 @@ import * as dotenv from "dotenv";
 import { Server } from "socket.io";
 dotenv.config();
 
-import { adminStates } from "./game.mjs";
+import { createGameState, adminStates } from "./game.mjs";
 import { onValidSessionId } from "./utils/session.mjs";
 
 const app = express();
@@ -35,6 +35,39 @@ app.get("/", (req, res) => {
 let sessions = {};
 
 io.on("connection", (socket) => {
+  console.log(socket.id);
+  socket.on("create-new-session", (callback) => {
+    /**
+     * Function to generate random six digit alpha numeric session id
+     */
+    const randomStrGenerator = () => {
+      const chars =
+        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      let result = "";
+      for (var i = 6; i > 0; --i)
+        result += chars[Math.floor(Math.random() * chars.length)];
+      return result;
+    };
+
+    //Checking if the generated id is already in the sessions object. If so, then it generates the new six digit sessionid
+    let generatedSessionId = randomStrGenerator();
+    while (sessions[generatedSessionId]) {
+      generatedSessionId = randomStrGenerator();
+    }
+
+    console.log("SessionId: ", generatedSessionId);
+
+    //assigning the generated session id a game state
+    sessions[generatedSessionId] = createGameState();
+
+    //assigning the generated session id a room
+    socket.join(generatedSessionId);
+
+    console.log("Rooms: ", socket.rooms);
+    //sending the session id to the frontend
+    callback(generatedSessionId);
+  });
+
   /* Connect client to session
    * @function
    * @param {String} sessionId the id of the session to join
