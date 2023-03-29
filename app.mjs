@@ -108,7 +108,6 @@ io.on("connection", (socket) => {
         (session) => {
           for (const player of session.players) {
             if (player.username == username) {
-              console.log(player);
               return player.isAdmin;
             }
           }
