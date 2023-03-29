@@ -35,7 +35,7 @@ let sessions = {};
 
 io.on("connection", (socket) => {
   console.log(socket.id);
-  socket.once("create-new-session", (callback) => {
+  socket.on("create-new-session", (callback) => {
     /**
      * Function to generate random six digit alpha numeric session id
      */
