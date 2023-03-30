@@ -6,7 +6,8 @@ import * as dotenv from "dotenv";
 import { Server } from "socket.io";
 dotenv.config();
 
-import { createGameState } from "./game.mjs";
+import { createGameState, adminStates } from "./game.mjs";
+import { onValidSessionId } from "./utils/session.mjs";
 
 const app = express();
 const server = http.createServer(app);
@@ -67,17 +68,62 @@ io.on("connection", (socket) => {
     callback(generatedSessionId);
   });
 
+  //socket.on("join-room");
+
   /* Connect client to session
    * @function
-   * @param {String} sessionId the id of the session to join
+   * @param {Object} data
+   * @param {String} data.sessionId the session Id to join
+   * @param {String} data.username of client to join
    */
-  // socket.on("join-session", (sessionId) => {
-  //   socket.join(sessionId);
-  //   // (todo) if game session does not exist, create new session
-  //   sessions[sessionId] = createGameState();
-  //   // (todo) else, add user to existing session
-  //   sessions.push();
-  // });
+  socket.on("join-session", ({ sessionId, username }, callback) => {
+    let isUsernameTaken = false;
+
+    onValidSessionId(
+      (session) => {
+        for (const player of session.players) {
+          if (player.username.toLowerCase() == username.toLowerCase()) {
+            isUsernameTaken = true;
+            callback({ error: "username taken" });
+            break;
+          }
+        }
+
+        if (!isUsernameTaken) {
+          const adminState = !session.adminState;
+          const player = {
+            username: username,
+            isAdmin: adminState,
+          };
+          session.players.push(player);
+          if (adminState) {
+            session.adminState = adminStates.hasAdmin;
+          }
+          socket.join(sessionId);
+          callback(player);
+          io.in(sessionId).emit("receive-session", session);
+        }
+      },
+      sessions,
+      sessionId
+    );
+  });
+
+  socket.on("is-admin", ({ sessionId, username }, callback) => {
+    callback(
+      onValidSessionId(
+        (session) => {
+          for (const player of session.players) {
+            if (player.username == username) {
+              return player.isAdmin;
+            }
+          }
+        },
+        sessions,
+        sessionId
+      )
+    );
+  });
 
   /* Send message to all clients (includin sender) in the same session
    * @function
