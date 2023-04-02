@@ -18,6 +18,8 @@ const io = new Server(server, {
   },
 });
 
+// var x = "";
+
 app.use(
   cors({
     origin: `http://${env.DOMAIN}:${env.CLIENT_PORT}`,
@@ -35,7 +37,7 @@ app.get("/", (req, res) => {
 let sessions = {};
 
 io.on("connection", (socket) => {
-  console.log(socket.id);
+  console.log("Connected: ", socket.id);
   socket.on("create-new-session", (callback) => {
     /**
      * Function to generate random six digit alpha numeric session id
@@ -55,18 +57,41 @@ io.on("connection", (socket) => {
       generatedSessionId = randomStrGenerator();
     }
 
-    console.log("SessionId: ", generatedSessionId);
-
+    // x = generatedSessionId;
     //assigning the generated session id a game state
     sessions[generatedSessionId] = createGameState();
 
     //assigning the generated session id a room
     socket.join(generatedSessionId);
 
-    console.log("Rooms: ", socket.rooms);
     //sending the session id to the frontend
     callback(generatedSessionId);
+
+    // if (sessions[x]?.players) console.log(sessions[x].players);
   });
+
+  // socket.on("disconnect", () => {
+  //   if (sessions[x]?.players) {
+  //     let disconnectedPlayer = sessions[x].players.findIndex((item) => {
+  //       return item.socketId === socket.id;
+  //     });
+
+  //     if (
+  //       sessions[x].players.length > 1 &&
+  //       sessions[x].players[disconnectedPlayer].isAdmin == true
+  //     ) {
+  //       sessions[x].players.shift();
+  //       sessions[x].players[0].isAdmin = true;
+  //       io.in(x).emit("remove-disconnected-player", sessions[x].players);
+  //     } else if (sessions[x].players.length > 1) {
+  //       sessions[x].players.splice(disconnectedPlayer, 1);
+  //       io.in(x).emit("remove-disconnected-player", sessions[x].players);
+  //     } else if (sessions[x].players.length < 1) {
+  //       delete sessions[x];
+  //     }
+  //     console.log(sessions[x].players);
+  //   }
+  // });
 
   //socket.on("join-room");
 
@@ -94,6 +119,7 @@ io.on("connection", (socket) => {
           const player = {
             username: username,
             isAdmin: adminState,
+            socketId: socket.id,
           };
           session.players.push(player);
           if (adminState) {
@@ -107,6 +133,8 @@ io.on("connection", (socket) => {
       sessions,
       sessionId
     );
+
+    // if (sessions[x]?.players) console.log(sessions[x].players);
   });
 
   socket.on("is-admin", ({ sessionId, username }, callback) => {
@@ -118,6 +146,21 @@ io.on("connection", (socket) => {
               return player.isAdmin;
             }
           }
+        },
+        sessions,
+        sessionId
+      )
+    );
+  });
+
+  /**
+   * Checks if the session id entered by the player is valid
+   */
+  socket.on("is-session-id-valid", (sessionId, callback) => {
+    callback(
+      onValidSessionId(
+        () => {
+          return true;
         },
         sessions,
         sessionId
