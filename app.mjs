@@ -93,14 +93,12 @@ io.on("connection", (socket) => {
         );
       } else if (
         disconnectedPlayer >= 0 &&
-        sessions[roomId].players.length < 1
+        sessions[roomId].players.length <= 1
       ) {
         delete sessions[roomId];
       }
-      console.log(sessions[roomId].players);
     }
   });
-
   //socket.on("join-room");
 
   /* Connect client to session
