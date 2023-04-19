@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
 let sessions = {};
 
 io.on("connection", (socket) => {
-  var roomId = "";
+  let roomId = "";
   console.log("Connected: ", socket.id);
   socket.on("create-new-session", (callback) => {
     /**
