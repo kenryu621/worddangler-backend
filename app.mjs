@@ -67,32 +67,39 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     if (sessions[roomId]?.players) {
-      let disconnectedPlayer = sessions[roomId].players.findIndex((item) => {
-        return item.socketId === socket.id;
-      });
+      let disconnectedPlayerIndex = sessions[roomId].players.findIndex(
+        (item) => {
+          return item.socketId === socket.id;
+        }
+      );
+
+      let disconnectedPlayer =
+        sessions[roomId].players[disconnectedPlayerIndex];
 
       if (
-        disconnectedPlayer >= 0 &&
+        disconnectedPlayerIndex >= 0 &&
         sessions[roomId].players.length > 1 &&
-        sessions[roomId].players[disconnectedPlayer].isAdmin == true
+        sessions[roomId].players[disconnectedPlayerIndex].isAdmin == true
       ) {
         sessions[roomId].players.shift();
         sessions[roomId].players[0].isAdmin = true;
         io.in(roomId).emit(
           "remove-disconnected-player",
-          sessions[roomId].players
+          sessions[roomId].players,
+          disconnectedPlayer
         );
       } else if (
-        disconnectedPlayer >= 0 &&
+        disconnectedPlayerIndex >= 0 &&
         sessions[roomId].players.length > 1
       ) {
-        sessions[roomId].players.splice(disconnectedPlayer, 1);
+        sessions[roomId].players.splice(disconnectedPlayerIndex, 1);
         io.in(roomId).emit(
           "remove-disconnected-player",
-          sessions[roomId].players
+          sessions[roomId].players,
+          disconnectedPlayer
         );
       } else if (
-        disconnectedPlayer >= 0 &&
+        disconnectedPlayerIndex >= 0 &&
         sessions[roomId].players.length <= 1
       ) {
         delete sessions[roomId];
