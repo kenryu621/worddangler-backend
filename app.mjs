@@ -192,9 +192,10 @@ io.on("connection", (socket) => {
    * @param {String} message the message to send
    * @param {String} sessionId the id of the session
    */
-  socket.on("chat", (message, sessionId) =>
-    io.in(sessionId).emit("receive-chat", message)
-  );
+  socket.on("chat", (message, sessionId) => {
+    io.in(sessionId).emit("receive-chat", message);
+    console.log(sessionId + ":" + message.username, "messaged \"" + message.message + "\"");
+  });
 });
 
 export default server;
