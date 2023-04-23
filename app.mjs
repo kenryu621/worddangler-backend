@@ -42,11 +42,9 @@ io.on("connection", (socket) => {
      * Function to generate random six digit alpha numeric session id
      */
     const randomStrGenerator = () => {
-      const chars =
-        "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
       let result = "";
-      for (var i = 6; i > 0; --i)
-        result += chars[Math.floor(Math.random() * chars.length)];
+      for (var i = 6; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
       return result;
     };
 
@@ -69,41 +67,20 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     if (sessions[roomId]?.players) {
-      let disconnectedPlayerIndex = sessions[roomId].players.findIndex(
-        (item) => {
-          return item.socketId === socket.id;
-        }
-      );
+      let disconnectedPlayerIndex = sessions[roomId].players.findIndex((item) => {
+        return item.socketId === socket.id;
+      });
 
-      let disconnectedPlayer =
-        sessions[roomId].players[disconnectedPlayerIndex];
+      let disconnectedPlayer = sessions[roomId].players[disconnectedPlayerIndex];
 
-      if (
-        disconnectedPlayerIndex >= 0 &&
-        sessions[roomId].players.length > 1 &&
-        sessions[roomId].players[disconnectedPlayerIndex].isAdmin == true
-      ) {
+      if (disconnectedPlayerIndex >= 0 && sessions[roomId].players.length > 1 && sessions[roomId].players[disconnectedPlayerIndex].isAdmin == true) {
         sessions[roomId].players.shift();
         sessions[roomId].players[0].isAdmin = true;
-        io.in(roomId).emit(
-          "remove-disconnected-player",
-          sessions[roomId].players,
-          disconnectedPlayer
-        );
-      } else if (
-        disconnectedPlayerIndex >= 0 &&
-        sessions[roomId].players.length > 1
-      ) {
+        io.in(roomId).emit("remove-disconnected-player", sessions[roomId].players, disconnectedPlayer);
+      } else if (disconnectedPlayerIndex >= 0 && sessions[roomId].players.length > 1) {
         sessions[roomId].players.splice(disconnectedPlayerIndex, 1);
-        io.in(roomId).emit(
-          "remove-disconnected-player",
-          sessions[roomId].players,
-          disconnectedPlayer
-        );
-      } else if (
-        disconnectedPlayerIndex >= 0 &&
-        sessions[roomId].players.length <= 1
-      ) {
+        io.in(roomId).emit("remove-disconnected-player", sessions[roomId].players, disconnectedPlayer);
+      } else if (disconnectedPlayerIndex >= 0 && sessions[roomId].players.length <= 1) {
         delete sessions[roomId];
       }
       console.log(socket.id, "disconnected from session", roomId);
@@ -194,7 +171,7 @@ io.on("connection", (socket) => {
    */
   socket.on("chat", (message, sessionId) => {
     io.in(sessionId).emit("receive-chat", message);
-    console.log(sessionId + ":" + message.username, "messaged \"" + message.message + "\"");
+    console.log(sessionId + ":" + message.username, "messaged", message.message);
   });
 });
 
