@@ -55,8 +55,10 @@ io.on("connection", (socket) => {
     while (sessions[generatedSessionId]) {
       generatedSessionId = randomStrGenerator();
     }
+
     //assigning the generated session id a game state
     sessions[generatedSessionId] = createGameState();
+    console.log(socket.id, "created game session:", generatedSessionId);
 
     //assigning the generated session id a room
     socket.join(generatedSessionId);
@@ -104,6 +106,7 @@ io.on("connection", (socket) => {
       ) {
         delete sessions[roomId];
       }
+      console.log(socket.id, "disconnected from session", roomId);
     }
   });
   //socket.on("join-room");
@@ -142,6 +145,7 @@ io.on("connection", (socket) => {
           socket.join(sessionId);
           callback(player);
           io.in(sessionId).emit("receive-session", session);
+          console.log(socket.id, "joined session", sessionId);
         }
       },
       sessions,
@@ -149,10 +153,11 @@ io.on("connection", (socket) => {
     );
   });
 
-  socket.on("is-admin", ({ sessionId, username }, callback) => {
+  socket.on("is-admin-start-game", ({ sessionId, username }, callback) => {
     callback(
       onValidSessionId(
         (session) => {
+          console.log("Received admin start game request from session", sessionId);
           for (const player of session.players) {
             if (player.username == username) {
               return player.isAdmin;
@@ -163,6 +168,8 @@ io.on("connection", (socket) => {
         sessionId
       )
     );
+    socket.join(sessionId);
+    io.in(sessionId).emit("admin-started-game");
   });
 
   /**
