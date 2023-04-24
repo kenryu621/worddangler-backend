@@ -30,4 +30,4 @@ const createGameState = () => ({
   adminState: adminStates.noAdmin,
 });
 
-export { createGameState, adminStates };
+export { createGameState, adminStates, gameStates };
