@@ -163,6 +163,35 @@ io.on("connection", (socket) => {
     io.in(sessionId).emit("admin-started-game", updatedSession);
   });
 
+  socket.on("is-admin-kick-player", ({ sessionId, username }) => {
+    const [player, players] = onValidSessionId(
+      (session) => {
+        let playerIndex = null;
+        for (let i = 0; i < session.players.length; i++) {
+          if (session.players[i].username == username) {
+            playerIndex = i;
+          }
+        }
+        if (playerIndex) {
+          const playerToRemove = session.players[playerIndex];
+          session.players.splice(playerIndex, 1);
+          return [playerToRemove, session.players];
+        }
+        return [null, null];
+      },
+      sessions,
+      sessionId
+    );
+    if (player) {
+      io.in(roomId).emit(
+        "remove-disconnected-player",
+        players,
+        player,
+        "kicked"
+      );
+    }
+  });
+
   /**
    * Checks if the session id entered by the player is valid
    */
