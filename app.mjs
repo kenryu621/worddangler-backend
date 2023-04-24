@@ -131,12 +131,14 @@ io.on("connection", (socket) => {
   });
 
   socket.on("is-admin-start-game", ({ sessionId, username }, callback) => {
+    let player_is_admin;
     callback(
       onValidSessionId(
         (session) => {
           console.log("Received admin start game request from session", sessionId);
           for (const player of session.players) {
             if (player.username == username) {
+              player_is_admin = player.isAdmin;
               return player.isAdmin;
             }
           }
@@ -145,8 +147,13 @@ io.on("connection", (socket) => {
         sessionId
       )
     );
-    socket.join(sessionId);
-    io.in(sessionId).emit("admin-started-game");
+    if (player_is_admin) {
+      socket.join(sessionId);
+      io.in(sessionId).emit("admin-started-game");
+      sessions[sessionId].time = 60;
+      sessions[sessionId].gameState = 1;
+      io.in(sessionId).emit("new-round", sessions[sessionId])
+    }
   });
 
   /**
